@@ -1,0 +1,705 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// PLATFORM / IDENTITY
+// ============================================================
+
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false)
+  image         String?
+  isSuperAdmin  Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenantUsers TenantUser[]
+  sessions    Session[]
+  accounts    Account[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+}
+
+// ============================================================
+// TENANT (ORGANIZATION)
+// ============================================================
+
+model Tenant {
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  // Which modules are enabled for this tenant
+  enabledModules String[] @default(["crm", "sales", "inventory", "manufacturing", "invoicing", "procurement"])
+  plan           String   @default("free")
+  // Misc settings: invoice number prefix, date format, etc.
+  settings       Json     @default("{}")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  tenantUsers            TenantUser[]
+  roles                  Role[]
+  contacts               Contact[]
+  companies              Company[]
+  leads                  Lead[]
+  deals                  Deal[]
+  products               Product[]
+  boms                   BillOfMaterials[]
+  quotes                 Quote[]
+  salesOrders            SalesOrder[]
+  workOrders             WorkOrder[]
+  purchaseOrders         PurchaseOrder[]
+  invoices               Invoice[]
+  inventoryItems         InventoryItem[]
+  customFieldDefinitions CustomFieldDefinition[]
+  pipelineStages         PipelineStage[]
+  activities             Activity[]
+}
+
+// Junction: a user can belong to multiple tenants with different roles
+model TenantUser {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String
+  roleId    String
+  isOwner   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  @@unique([tenantId, userId])
+  @@index([tenantId])
+  @@index([userId])
+}
+
+// ============================================================
+// RBAC
+// ============================================================
+
+model Role {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  description String?
+  // system roles (e.g. "Admin") can't be deleted
+  isSystem    Boolean  @default(false)
+  // Flat map: { "crm.contacts.read": true, "crm.contacts.create": true, ... }
+  // Convention: {module}.{entity}.{action}
+  permissions Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantUsers TenantUser[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+// ============================================================
+// CUSTOMIZATION ENGINE
+// ============================================================
+
+model CustomFieldDefinition {
+  id         String   @id @default(cuid())
+  tenantId   String
+  // Which entity this field applies to
+  entityType String // "Contact" | "Company" | "Lead" | "Deal" | "Product" | "SalesOrder" | "WorkOrder" | "Invoice" | "PurchaseOrder"
+  // Machine-readable key, unique per tenant+entityType
+  fieldName  String
+  fieldLabel String
+  // "text" | "number" | "date" | "select" | "multi_select" | "boolean" | "relation"
+  fieldType  String
+  // For select/multi_select: ["Option A", "Option B", ...]
+  options    Json?
+  isRequired Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, entityType, fieldName])
+  @@index([tenantId, entityType])
+}
+
+// Configurable pipeline stages — used by leads, deals, work_orders, purchase_orders
+model PipelineStage {
+  id           String   @id @default(cuid())
+  tenantId     String
+  // "lead" | "deal" | "work_order" | "purchase_order"
+  pipelineType String
+  name         String
+  // hex color for the stage badge/kanban column
+  color        String   @default("#6366f1")
+  sortOrder    Int      @default(0)
+  // Assigned to new records of this pipeline type
+  isDefault    Boolean  @default(false)
+  // For deal pipeline: marks deal as won/lost
+  isWon        Boolean  @default(false)
+  isLost       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, pipelineType, name])
+  @@index([tenantId, pipelineType])
+}
+
+// ============================================================
+// ACTIVITY LOG (generic — no per-entity FKs)
+// entityType + entityId covers ALL entities without schema changes.
+// Referential integrity is application-enforced.
+// ============================================================
+
+model Activity {
+  id          String   @id @default(cuid())
+  tenantId    String
+  // "Contact" | "Company" | "Lead" | "Deal" | "SalesOrder" | "WorkOrder" | "Invoice" | "PurchaseOrder"
+  entityType  String
+  entityId    String
+  // "call" | "email" | "note" | "meeting" | "status_change" | "file"
+  type        String
+  title       String
+  description String?  @db.Text
+  // ID of the user who performed the activity
+  userId      String
+  createdAt   DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, entityType, entityId])
+}
+
+// ============================================================
+// CRM MODULE
+// ============================================================
+
+model Contact {
+  id           String   @id @default(cuid())
+  tenantId     String
+  companyId    String?
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String?
+  // Job title
+  title        String?
+  customFields Json     @default("{}")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company     Company?     @relation(fields: [companyId], references: [id])
+  leads       Lead[]
+  deals       Deal[]
+  invoices    Invoice[]
+  salesOrders SalesOrder[]
+
+  @@index([tenantId])
+  @@index([tenantId, companyId])
+  @@index([tenantId, email])
+}
+
+model Company {
+  id           String   @id @default(cuid())
+  tenantId     String
+  name         String
+  industry     String?
+  website      String?
+  phone        String?
+  address      String?
+  // "customer" | "supplier" | "both"
+  type         String   @default("customer")
+  customFields Json     @default("{}")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contacts       Contact[]
+  leads          Lead[]
+  deals          Deal[]
+  invoices       Invoice[]
+  purchaseOrders PurchaseOrder[]
+  salesOrders    SalesOrder[]
+
+  @@index([tenantId])
+  @@index([tenantId, name])
+}
+
+model Lead {
+  id           String   @id @default(cuid())
+  tenantId     String
+  contactId    String?
+  companyId    String?
+  title        String
+  // "website" | "referral" | "cold_call" | "trade_show" | "other"
+  source       String?
+  // References PipelineStage (pipelineType = "lead")
+  stageId      String
+  value        Decimal? @db.Decimal(12, 2)
+  customFields Json     @default("{}")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tenant  Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact Contact? @relation(fields: [contactId], references: [id])
+  company Company? @relation(fields: [companyId], references: [id])
+  deal    Deal? // null until converted
+
+  @@index([tenantId])
+  @@index([tenantId, stageId])
+  @@index([tenantId, contactId])
+}
+
+model Deal {
+  id                String    @id @default(cuid())
+  tenantId          String
+  contactId         String?
+  companyId         String?
+  // Link back to the originating lead
+  leadId            String?   @unique
+  title             String
+  value             Decimal   @db.Decimal(12, 2) @default(0)
+  // References PipelineStage (pipelineType = "deal")
+  stageId           String
+  expectedCloseDate DateTime?
+  wonAt             DateTime?
+  lostAt            DateTime?
+  lostReason        String?
+  customFields      Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant      Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  contact     Contact?    @relation(fields: [contactId], references: [id])
+  company     Company?    @relation(fields: [companyId], references: [id])
+  lead        Lead?       @relation(fields: [leadId], references: [id])
+  salesOrders SalesOrder[]
+
+  @@index([tenantId])
+  @@index([tenantId, stageId])
+  @@index([tenantId, contactId])
+}
+
+// ============================================================
+// PRODUCT CATALOG (shared by CRM/ERP)
+// ============================================================
+
+model Product {
+  id              String   @id @default(cuid())
+  tenantId        String
+  // Self-referencing nullable FK for product variants.
+  // E.g. "3-Seater Sofa – Grey Linen" has parentProductId → "3-Seater Sofa".
+  // Each variant is a full Product record with its own SKU, unitPrice, and BOM.
+  // Do NOT build a dynamic attribute/option configurator here — that is a future phase.
+  parentProductId String?
+  sku             String
+  name            String
+  description     String?  @db.Text
+  // "raw_material" | "component" | "finished_good" | "service"
+  type            String
+  unitPrice       Decimal  @db.Decimal(12, 2) @default(0)
+  // Free-text UOM — supports any unit: "pcs", "kg", "m", "board-ft", "linear-m", "sheet", "kit", etc.
+  unit            String   @default("pcs")
+  customFields    Json     @default("{}")
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Self-referencing variant relations
+  parentProduct  Product?          @relation("ProductVariants", fields: [parentProductId], references: [id])
+  variants       Product[]         @relation("ProductVariants")
+  inventoryItems InventoryItem[]
+  // BOMs where this product is the finished good / component being produced
+  bomsAsParent   BillOfMaterials[] @relation("BOMParent")
+  // BOM lines where this product is consumed as a material/component
+  bomLines       BomLine[]
+
+  @@unique([tenantId, sku])
+  @@index([tenantId])
+  @@index([tenantId, type])
+  @@index([tenantId, parentProductId])
+}
+
+// ============================================================
+// BILL OF MATERIALS
+// Single-level for MVP — schema is recursive-capable (a component
+// Product can have its own BOM) but Work Order material consumption
+// only explodes ONE level (direct BomLine entries).
+// Multi-level recursive explosion is deferred to Phase 2.
+// ============================================================
+
+model BillOfMaterials {
+  id        String   @id @default(cuid())
+  tenantId  String
+  // The finished good or component this BOM produces
+  productId String
+  name      String
+  version   String   @default("1.0")
+  isActive  Boolean  @default(true)
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product    Product     @relation("BOMParent", fields: [productId], references: [id])
+  lines      BomLine[]
+  workOrders WorkOrder[]
+
+  @@index([tenantId])
+  @@index([tenantId, productId])
+}
+
+model BomLine {
+  id        String  @id @default(cuid())
+  bomId     String
+  // Raw material or component consumed
+  productId String
+  quantity  Decimal @db.Decimal(12, 4)
+  // Optional: notes about this material in context of the BOM
+  notes     String?
+
+  bom     BillOfMaterials @relation(fields: [bomId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id])
+
+  @@index([bomId])
+  @@index([productId])
+}
+
+// ============================================================
+// SALES MODULE
+// ============================================================
+
+model Quote {
+  id           String    @id @default(cuid())
+  tenantId     String
+  dealId       String?
+  quoteNumber  String
+  contactId    String?
+  companyId    String?
+  // "draft" | "sent" | "accepted" | "rejected" | "expired"
+  status       String    @default("draft")
+  totalAmount  Decimal   @db.Decimal(12, 2) @default(0)
+  validUntil   DateTime?
+  notes        String?   @db.Text
+  customFields Json      @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lines  QuoteLine[]
+
+  @@unique([tenantId, quoteNumber])
+  @@index([tenantId])
+  @@index([tenantId, status])
+}
+
+model QuoteLine {
+  id          String  @id @default(cuid())
+  quoteId     String
+  productId   String
+  description String?
+  quantity    Decimal @db.Decimal(12, 4)
+  unitPrice   Decimal @db.Decimal(12, 2)
+  totalPrice  Decimal @db.Decimal(12, 2)
+
+  quote Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+}
+
+model SalesOrder {
+  id           String    @id @default(cuid())
+  tenantId     String
+  dealId       String?
+  orderNumber  String
+  contactId    String?
+  companyId    String?
+  // "pending" | "confirmed" | "in_production" | "shipped" | "delivered" | "cancelled"
+  status       String    @default("pending")
+  totalAmount  Decimal   @db.Decimal(12, 2) @default(0)
+  orderDate    DateTime  @default(now())
+  deliveryDate DateTime?
+  notes        String?   @db.Text
+  customFields Json      @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  tenant     Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company    Company?        @relation(fields: [companyId], references: [id])
+  contact    Contact?        @relation(fields: [contactId], references: [id])
+  deal       Deal?           @relation(fields: [dealId], references: [id])
+  lines      SalesOrderLine[]
+  workOrders WorkOrder[]
+  invoices   Invoice[]
+
+  @@unique([tenantId, orderNumber])
+  @@index([tenantId])
+  @@index([tenantId, status])
+}
+
+model SalesOrderLine {
+  id           String  @id @default(cuid())
+  salesOrderId String
+  productId    String
+  description  String?
+  quantity     Decimal @db.Decimal(12, 4)
+  unitPrice    Decimal @db.Decimal(12, 2)
+  totalPrice   Decimal @db.Decimal(12, 2)
+
+  salesOrder SalesOrder  @relation(fields: [salesOrderId], references: [id], onDelete: Cascade)
+  workOrders WorkOrder[]
+
+  @@index([salesOrderId])
+}
+
+// ============================================================
+// MANUFACTURING MODULE
+// ============================================================
+
+model WorkOrder {
+  id               String    @id @default(cuid())
+  tenantId         String
+  salesOrderId     String?
+  salesOrderLineId String?
+  bomId            String
+  workOrderNumber  String
+  // References PipelineStage (pipelineType = "work_order")
+  stageId          String
+  quantityPlanned  Decimal   @db.Decimal(12, 4)
+  quantityProduced Decimal   @db.Decimal(12, 4) @default(0)
+  startDate        DateTime?
+  dueDate          DateTime?
+  completedAt      DateTime?
+  notes            String?   @db.Text
+  customFields     Json      @default("{}")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  tenant           Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  salesOrder       SalesOrder?           @relation(fields: [salesOrderId], references: [id])
+  salesOrderLine   SalesOrderLine?       @relation(fields: [salesOrderLineId], references: [id])
+  bom              BillOfMaterials       @relation(fields: [bomId], references: [id])
+  materialConsumptions MaterialConsumption[]
+
+  @@unique([tenantId, workOrderNumber])
+  @@index([tenantId])
+  @@index([tenantId, stageId])
+  @@index([tenantId, salesOrderId])
+}
+
+// Records actual material consumed during production
+model MaterialConsumption {
+  id          String   @id @default(cuid())
+  workOrderId String
+  // Raw material consumed
+  productId   String
+  quantity    Decimal  @db.Decimal(12, 4)
+  consumedAt  DateTime @default(now())
+  notes       String?
+
+  workOrder WorkOrder @relation(fields: [workOrderId], references: [id], onDelete: Cascade)
+
+  @@index([workOrderId])
+}
+
+// ============================================================
+// INVENTORY MODULE
+// ============================================================
+
+model InventoryItem {
+  id           String   @id @default(cuid())
+  tenantId     String
+  productId    String
+  quantity     Decimal  @db.Decimal(12, 4) @default(0)
+  // Warehouse location / bin
+  location     String   @default("default")
+  reorderLevel Decimal? @db.Decimal(12, 4)
+  updatedAt    DateTime @updatedAt
+
+  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product   Product         @relation(fields: [productId], references: [id])
+  movements StockMovement[]
+
+  @@unique([tenantId, productId, location])
+  @@index([tenantId])
+  @@index([tenantId, productId])
+}
+
+model StockMovement {
+  id              String   @id @default(cuid())
+  inventoryItemId String
+  // "in" | "out" | "adjustment"
+  type            String
+  quantity        Decimal  @db.Decimal(12, 4)
+  // "work_order_consumption" | "work_order_completion" | "purchase_order_receipt" | "manual_adjustment"
+  reason          String
+  // e.g. WorkOrder ID or PurchaseOrder ID
+  referenceId     String?
+  // "WorkOrder" | "PurchaseOrder"
+  referenceType   String?
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  inventoryItem InventoryItem @relation(fields: [inventoryItemId], references: [id])
+
+  @@index([inventoryItemId])
+  @@index([referenceId, referenceType])
+}
+
+// ============================================================
+// PROCUREMENT MODULE
+// ============================================================
+
+model PurchaseOrder {
+  id           String    @id @default(cuid())
+  tenantId     String
+  poNumber     String
+  // Supplier — references Company (type = "supplier" or "both")
+  supplierId   String?
+  // "draft" | "sent" | "partially_received" | "received" | "cancelled"
+  status       String    @default("draft")
+  totalAmount  Decimal   @db.Decimal(12, 2) @default(0)
+  orderDate    DateTime  @default(now())
+  expectedDate DateTime?
+  notes        String?   @db.Text
+  customFields Json      @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  tenant   Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplier Company?            @relation(fields: [supplierId], references: [id])
+  lines    PurchaseOrderLine[]
+
+  @@unique([tenantId, poNumber])
+  @@index([tenantId])
+  @@index([tenantId, status])
+}
+
+model PurchaseOrderLine {
+  id               String  @id @default(cuid())
+  purchaseOrderId  String
+  productId        String
+  quantity         Decimal @db.Decimal(12, 4)
+  unitPrice        Decimal @db.Decimal(12, 2)
+  totalPrice       Decimal @db.Decimal(12, 2)
+  receivedQuantity Decimal @db.Decimal(12, 4) @default(0)
+
+  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+
+  @@index([purchaseOrderId])
+}
+
+// ============================================================
+// INVOICING MODULE
+// ============================================================
+
+model Invoice {
+  id                String    @id @default(cuid())
+  tenantId          String
+  salesOrderId      String?
+  invoiceNumber     String
+  contactId         String?
+  companyId         String?
+  // "draft" | "sent" | "paid" | "overdue" | "cancelled"
+  status            String    @default("draft")
+  isRecurring       Boolean   @default(false)
+  // "monthly" | "quarterly" | "yearly"
+  recurringInterval String?
+  nextRecurringDate DateTime?
+  subtotal          Decimal   @db.Decimal(12, 2) @default(0)
+  tax               Decimal   @db.Decimal(12, 2) @default(0)
+  totalAmount       Decimal   @db.Decimal(12, 2) @default(0)
+  dueDate           DateTime?
+  paidAt            DateTime?
+  notes             String?   @db.Text
+  customFields      Json      @default("{}")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  company    Company?      @relation(fields: [companyId], references: [id])
+  contact    Contact?      @relation(fields: [contactId], references: [id])
+  salesOrder SalesOrder?   @relation(fields: [salesOrderId], references: [id])
+  lines      InvoiceLine[]
+
+  @@unique([tenantId, invoiceNumber])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, isRecurring, nextRecurringDate])
+}
+
+model InvoiceLine {
+  id          String  @id @default(cuid())
+  invoiceId   String
+  description String
+  quantity    Decimal @db.Decimal(12, 4)
+  unitPrice   Decimal @db.Decimal(12, 2)
+  totalPrice  Decimal @db.Decimal(12, 2)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}

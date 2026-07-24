@@ -1,0 +1,279 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   FABRIX DESIGN SYSTEM
+   A dark-mode-first, premium industrial ERP aesthetic.
+   Primary: Indigo-violet gradient
+   Accent: Amber (for manufacturing/production states)
+   Surface: Cool gray with subtle blue tint
+   ============================================================ */
+
+@theme inline {
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+  --radius: var(--radius-md);
+
+  /* Colors — mapped from CSS variables below */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+}
+
+:root {
+  /* Light mode — clean, professional */
+  --background: oklch(0.98 0.003 250);
+  --foreground: oklch(0.15 0.02 260);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.02 260);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.02 260);
+
+  /* Indigo primary */
+  --primary: oklch(0.52 0.22 264);
+  --primary-foreground: oklch(0.98 0 0);
+
+  --secondary: oklch(0.94 0.01 260);
+  --secondary-foreground: oklch(0.35 0.05 260);
+
+  --muted: oklch(0.96 0.005 260);
+  --muted-foreground: oklch(0.55 0.02 260);
+
+  /* Amber accent */
+  --accent: oklch(0.85 0.15 75);
+  --accent-foreground: oklch(0.25 0.08 75);
+
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.9 0.01 260);
+  --input: oklch(0.92 0.01 260);
+  --ring: oklch(0.52 0.22 264);
+
+  /* Sidebar — Clean Light Theme */
+  --sidebar: oklch(0.99 0.002 250);
+  --sidebar-foreground: oklch(0.20 0.03 260);
+  --sidebar-accent: oklch(0.94 0.015 264);
+  --sidebar-accent-foreground: oklch(0.50 0.22 264);
+  --sidebar-border: oklch(0.91 0.01 260);
+}
+
+.dark {
+  --background: oklch(0.12 0.025 260);
+  --foreground: oklch(0.92 0.01 260);
+
+  --card: oklch(0.16 0.025 260);
+  --card-foreground: oklch(0.92 0.01 260);
+
+  --popover: oklch(0.16 0.025 260);
+  --popover-foreground: oklch(0.92 0.01 260);
+
+  --primary: oklch(0.62 0.22 264);
+  --primary-foreground: oklch(0.1 0 0);
+
+  --secondary: oklch(0.22 0.03 260);
+  --secondary-foreground: oklch(0.85 0.01 260);
+
+  --muted: oklch(0.2 0.02 260);
+  --muted-foreground: oklch(0.55 0.03 260);
+
+  --accent: oklch(0.75 0.18 75);
+  --accent-foreground: oklch(0.15 0.05 75);
+
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --border: oklch(0.25 0.03 260);
+  --input: oklch(0.22 0.03 260);
+  --ring: oklch(0.62 0.22 264);
+
+  --sidebar: oklch(0.1 0.025 260);
+  --sidebar-foreground: oklch(0.85 0.01 260);
+  --sidebar-accent: oklch(0.18 0.04 264);
+  --sidebar-accent-foreground: oklch(0.95 0.01 260);
+  --sidebar-border: oklch(0.2 0.04 264);
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/30;
+  }
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+@layer utilities {
+  /* Glass effect for cards/overlays */
+  .glass {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: oklch(1 0 0 / 0.08);
+    border: 1px solid oklch(1 0 0 / 0.12);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, oklch(0.62 0.22 264), oklch(0.72 0.18 290));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Shimmer animation for loading states */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      oklch(0.9 0.01 260 / 0.3) 25%,
+      oklch(0.95 0.005 260 / 0.6) 50%,
+      oklch(0.9 0.01 260 / 0.3) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Subtle ring glow for focused interactive elements */
+  .glow-ring {
+    box-shadow: 0 0 0 3px oklch(0.52 0.22 264 / 0.2);
+  }
+
+  /* Status dot */
+  .status-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+
+  /* Mono numbers for financial data */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Transition all properties for interactive elements */
+  .interactive {
+    @apply transition-all duration-150 ease-in-out;
+  }
+}
+
+/* ============================================================
+   COMPONENT OVERRIDES
+   ============================================================ */
+@layer components {
+  /* Stats card with gradient accent bar */
+  .stat-card {
+    @apply relative overflow-hidden rounded-xl bg-card border border-border p-5;
+  }
+  .stat-card::before {
+    content: "";
+    @apply absolute top-0 left-0 right-0 h-0.5;
+    background: linear-gradient(90deg, var(--primary), oklch(0.72 0.18 290));
+  }
+
+  /* Sidebar nav item */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium
+           text-sidebar-foreground/70 hover:text-sidebar-foreground
+           hover:bg-sidebar-accent transition-all duration-150 cursor-pointer;
+  }
+  .nav-item.active {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground;
+  }
+
+  /* Data table row hover */
+  .table-row-hover {
+    @apply hover:bg-muted/50 transition-colors duration-100;
+  }
+
+  /* Kanban column */
+  .kanban-column {
+    @apply flex-shrink-0 w-72 rounded-xl bg-muted/50 border border-border p-3 flex flex-col gap-2;
+  }
+
+  /* Kanban card */
+  .kanban-card {
+    @apply bg-card border border-border rounded-lg p-3 shadow-sm
+           hover:shadow-md hover:border-primary/30 hover:-translate-y-0.5
+           transition-all duration-150 cursor-pointer;
+  }
+
+  /* Page header */
+  .page-header {
+    @apply flex items-center justify-between mb-6;
+  }
+  .page-title {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+  .page-subtitle {
+    @apply text-sm text-muted-foreground mt-0.5;
+  }
+
+  /* Empty state */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-16 text-center;
+  }
+  .empty-state-icon {
+    @apply w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4;
+  }
+}

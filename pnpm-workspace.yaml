@@ -1,0 +1,10 @@
+allowBuilds:
+  '@prisma/engines': true
+  esbuild: false
+  prisma: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver
