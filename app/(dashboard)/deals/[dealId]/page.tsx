@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate, stageColorToStyle } from "@/lib/utils";
 import { ArrowLeft, Handshake, Building2, User, Calendar, ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import type { SalesOrder, CustomFieldDefinition } from "@/lib/prisma-types";
 
 interface DealDetailPageProps {
   params: Promise<{ dealId: string }>;
@@ -159,7 +160,7 @@ export default async function DealDetailPage({ params }: DealDetailPageProps) {
               <p className="text-xs text-muted-foreground">No sales orders generated yet.</p>
             ) : (
               <div className="divide-y divide-border/60 text-xs">
-                {deal.salesOrders.map((so) => (
+                {deal.salesOrders.map((so: SalesOrder) => (
                   <Link
                     key={so.id}
                     href={`/sales-orders/${so.id}`}
@@ -183,7 +184,7 @@ export default async function DealDetailPage({ params }: DealDetailPageProps) {
             <div className="bg-card border border-border rounded-xl p-5 space-y-4">
               <h2 className="text-sm font-semibold">Custom Fields</h2>
               <div className="space-y-3 text-xs">
-                {customDefs.map((def) => (
+                {customDefs.map((def: CustomFieldDefinition) => (
                   <div key={def.id} className="flex justify-between items-center py-1 border-b border-border/40 last:border-0">
                     <span className="text-muted-foreground font-medium">{def.fieldLabel}</span>
                     <CustomFieldRenderer
