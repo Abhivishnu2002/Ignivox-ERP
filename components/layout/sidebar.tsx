@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { getNavItemsForUser } from "@/lib/modules";
 import { PERMISSIONS } from "@/lib/permissions";
-import type { Tenant } from "@prisma/client";
+import type { Tenant } from "@/lib/prisma-types";
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import {
   User,

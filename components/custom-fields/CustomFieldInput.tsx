@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { CustomFieldDefinition } from "@prisma/client";
+import type { CustomFieldDefinition } from "@/lib/prisma-types";
 
 interface CustomFieldInputProps {
   definition: CustomFieldDefinition;

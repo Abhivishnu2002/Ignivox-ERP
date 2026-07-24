@@ -16,7 +16,7 @@ import {
   Plus,
   Loader2,
 } from "lucide-react";
-import type { Activity } from "@prisma/client";
+import type { Activity } from "@/lib/prisma-types";
 
 interface ActivityTimelineProps {
   tenantId: string;

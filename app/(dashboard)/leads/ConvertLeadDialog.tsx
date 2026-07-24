@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Lead, PipelineStage } from "@prisma/client";
+import type { Lead, PipelineStage } from "@/lib/prisma-types";
 
 interface ConvertLeadDialogProps {
   tenantId: string;

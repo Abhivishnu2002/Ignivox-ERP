@@ -1,6 +1,5 @@
 "use server";
 
-import type { Prisma } from "@prisma/client";
 import { prisma, tenantTransaction } from "@/lib/db";
 import { requireTenantAccess } from "@/lib/auth";
 import { PERMISSIONS } from "@/lib/permissions";
@@ -52,7 +51,7 @@ export async function createProductAction(tenantId: string, input: ProductInput)
           type: data.type,
           unit: data.unitOfMeasure,
           unitPrice: data.unitPrice,
-          customFields: (data.customFields ?? {}) as Prisma.InputJsonObject,
+          customFields: (data.customFields ?? {}) as unknown as never,
         },
       });
 

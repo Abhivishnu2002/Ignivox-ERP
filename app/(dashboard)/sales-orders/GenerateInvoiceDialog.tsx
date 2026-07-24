@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { SalesOrder } from "@prisma/client";
+import type { SalesOrder } from "@/lib/prisma-types";
 
 interface GenerateInvoiceDialogProps {
   tenantId: string;

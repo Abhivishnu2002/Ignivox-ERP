@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { PurchaseOrder, Product } from "@prisma/client";
+import type { PurchaseOrder, Product } from "@/lib/prisma-types";
 
 interface ReceiveInventoryDialogProps {
   tenantId: string;

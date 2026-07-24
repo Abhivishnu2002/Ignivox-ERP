@@ -1,6 +1,5 @@
 "use server";
 
-import type { Prisma } from "@prisma/client";
 import { prisma, tenantTransaction } from "@/lib/db";
 import { requireTenantAccess } from "@/lib/auth";
 import { PERMISSIONS } from "@/lib/permissions";
@@ -68,7 +67,7 @@ export async function createWorkOrderAction(tenantId: string, input: WorkOrderIn
           startDate: data.startDate ? new Date(data.startDate) : null,
           dueDate: data.dueDate ? new Date(data.dueDate) : null,
           notes: data.notes || null,
-          customFields: (data.customFields ?? {}) as Prisma.InputJsonObject,
+          customFields: (data.customFields ?? {}) as unknown as never,
         },
       });
 

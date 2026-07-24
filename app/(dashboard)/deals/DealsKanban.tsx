@@ -8,7 +8,7 @@ import { ConvertDealDialog } from "./ConvertDealDialog";
 import { Badge } from "@/components/ui/badge";
 import { Building2, User, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import type { Deal, PipelineStage, Contact, Company } from "@prisma/client";
+import type { Deal, PipelineStage, Contact, Company } from "@/lib/prisma-types";
 
 type DealWithRelations = Deal & {
   contact?: Contact | null;

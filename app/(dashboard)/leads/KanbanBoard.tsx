@@ -7,7 +7,7 @@ import { updateLeadStageAction } from "./actions";
 import { ConvertLeadDialog } from "./ConvertLeadDialog";
 import { Badge } from "@/components/ui/badge";
 import { Building2, User } from "lucide-react";
-import type { Lead, PipelineStage, Contact, Company } from "@prisma/client";
+import type { Lead, PipelineStage, Contact, Company } from "@/lib/prisma-types";
 
 type LeadWithRelations = Lead & {
   contact?: Contact | null;

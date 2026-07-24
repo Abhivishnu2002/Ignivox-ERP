@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
-import type { CustomFieldDefinition } from "@prisma/client";
+import type { CustomFieldDefinition } from "@/lib/prisma-types";
 
 interface CustomFieldRendererProps {
   definition: CustomFieldDefinition;

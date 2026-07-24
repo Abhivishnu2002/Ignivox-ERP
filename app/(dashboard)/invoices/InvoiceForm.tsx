@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Company, Contact, CustomFieldDefinition } from "@prisma/client";
+import type { Company, Contact, CustomFieldDefinition } from "@/lib/prisma-types";
 
 const schema = z.object({
   customerCompanyId: z.string().optional(),

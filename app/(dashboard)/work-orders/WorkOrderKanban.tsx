@@ -7,7 +7,7 @@ import { updateWorkOrderStageAction } from "./actions";
 import { Badge } from "@/components/ui/badge";
 import { Wrench, Calendar, ShoppingCart, CheckCircle2, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import type { WorkOrder, PipelineStage, Product, BillOfMaterials, SalesOrder } from "@prisma/client";
+import type { WorkOrder, PipelineStage, Product, BillOfMaterials, SalesOrder } from "@/lib/prisma-types";
 
 type WorkOrderWithRelations = WorkOrder & {
   bom: BillOfMaterials & { product: Product };

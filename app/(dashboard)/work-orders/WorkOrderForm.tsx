@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Product, SalesOrder, PipelineStage, CustomFieldDefinition } from "@prisma/client";
+import type { Product, SalesOrder, PipelineStage, CustomFieldDefinition } from "@/lib/prisma-types";
 
 const schema = z.object({
   productId: z.string().min(1, "Product required"),

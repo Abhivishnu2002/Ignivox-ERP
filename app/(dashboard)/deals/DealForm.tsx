@@ -25,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Contact, Company, PipelineStage, CustomFieldDefinition } from "@prisma/client";
+import type { Contact, Company, PipelineStage, CustomFieldDefinition } from "@/lib/prisma-types";
 
 const schema = z.object({
   title: z.string().min(1, "Deal title required"),

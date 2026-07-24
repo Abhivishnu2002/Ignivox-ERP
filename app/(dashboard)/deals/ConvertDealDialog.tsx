@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { Deal } from "@prisma/client";
+import type { Deal } from "@/lib/prisma-types";
 
 interface ConvertDealDialogProps {
   tenantId: string;

@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Product } from "@prisma/client";
+import type { Product } from "@/lib/prisma-types";
 
 interface BomFormProps {
   tenantId: string;

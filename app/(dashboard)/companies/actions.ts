@@ -1,5 +1,4 @@
 "use server";
-import type { Prisma } from "@prisma/client";
 import { prisma, tenantTransaction } from "@/lib/db";
 import { requireTenantAccess } from "@/lib/auth";
 import { PERMISSIONS } from "@/lib/permissions";
@@ -42,7 +41,7 @@ export async function createCompanyAction(tenantId: string, input: CompanyInput)
           phone: data.phone || null,
           address: data.address || null,
           type: data.type,
-          customFields: (data.customFields ?? {}) as Prisma.InputJsonObject,
+          customFields: (data.customFields ?? {}) as unknown as never,
         },
       });
 
