@@ -3,7 +3,7 @@
 import { prisma, tenantTransaction } from "@/lib/db";
 import { getServerSession } from "@/lib/auth";
 import { ADMIN_PERMISSIONS } from "@/lib/permissions";
-import type { Prisma } from "@prisma/client";
+type PrismaTx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -42,7 +42,7 @@ export async function createTenantAction(input: OnboardingInput): Promise<{ erro
   }
 
   // Create tenant + admin role + membership in a transaction
-  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  await prisma.$transaction(async (tx: PrismaTx) => {
     // 1. Create the tenant
     const tenant = await tx.tenant.create({
       data: {
