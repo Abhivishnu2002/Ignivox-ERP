@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
 import { Package, Layers, DollarSign } from "lucide-react";
 import Link from "next/link";
+import type { Product } from "@/lib/prisma-types";
 
 interface ProductsPageProps {
   searchParams: Promise<{ new?: string }>;
@@ -100,14 +101,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {products.map((prod) => {
+                {products.map((prod: any) => {
                   const stockTotal = prod.inventoryItems.reduce(
-                    (sum, i) => sum + Number(i.quantity),
+                    (sum: number, i: any) => sum + Number(i.quantity),
                     0
                   );
-                  const badgeInfo = typeBadges[prod.type] || typeBadges.finished_good;
+                  const badgeInfo = typeBadges[prod.type as keyof typeof typeBadges] || typeBadges.finished_good;
                   const totalBomLines = prod.bomsAsParent.reduce(
-                    (sum, b) => sum + b.lines.length,
+                    (sum: number, b: any) => sum + b.lines.length,
                     0
                   );
 

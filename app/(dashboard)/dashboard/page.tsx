@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import type { Deal, Company, Contact, WorkOrder, Product } from "@/lib/prisma-types";
 
 export default async function DashboardPage() {
   const session = await getServerSession();
@@ -142,7 +143,7 @@ export default async function DashboardPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        {stats.map((stat) => {
+        {stats.map((stat: any) => {
           const Icon = stat.icon;
           return (
             <Link
@@ -202,7 +203,7 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {recentDeals.map((deal) => (
+              {recentDeals.map((deal: Deal & { company: Company | null; contact: Contact | null }) => (
                 <Link
                   key={deal.id}
                   href={`/deals/${deal.id}`}
@@ -251,7 +252,7 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="divide-y divide-border">
-              {recentWorkOrders.map((wo) => (
+              {recentWorkOrders.map((wo: WorkOrder & { bom: { product: Product } }) => (
                 <Link
                   key={wo.id}
                   href={`/work-orders/${wo.id}`}
@@ -292,7 +293,7 @@ export default async function DashboardPage() {
             { label: "New Sales Order", href: "/sales-orders?new=1", icon: ShoppingCart },
             { label: "New Work Order", href: "/work-orders?new=1", icon: Factory },
             { label: "New Invoice", href: "/invoices?new=1", icon: Receipt },
-          ].map((action) => {
+          ].map((action: any) => {
             const Icon = action.icon;
             return (
               <Link

@@ -137,7 +137,7 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
               <p className="text-xs text-muted-foreground">No contacts linked to this account.</p>
             ) : (
               <div className="divide-y divide-border/60">
-                {company.contacts.map((contact: Contact) => (
+                {company.contacts.map((contact: any) => (
                   <Link
                     key={contact.id}
                     href={`/contacts/${contact.id}`}
@@ -165,7 +165,7 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
               <p className="text-xs text-muted-foreground">No deals linked to this account.</p>
             ) : (
               <div className="divide-y divide-border/60">
-                {company.deals.map((deal: Deal) => (
+                {company.deals.map((deal: any) => (
                   <Link
                     key={deal.id}
                     href={`/deals/${deal.id}`}
@@ -189,7 +189,7 @@ export default async function CompanyDetailPage({ params }: CompanyDetailPagePro
             <div className="bg-card border border-border rounded-xl p-5 space-y-4">
               <h2 className="text-sm font-semibold">Custom Fields</h2>
               <div className="space-y-3 text-xs">
-                {customDefs.map((def: CustomFieldDefinition) => (
+                {customDefs.map((def: any) => (
                   <div key={def.id} className="flex justify-between items-center py-1 border-b border-border/40 last:border-0">
                     <span className="text-muted-foreground font-medium">{def.fieldLabel}</span>
                     <CustomFieldRenderer

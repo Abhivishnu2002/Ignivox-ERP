@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { FileText, Receipt, Calendar, Building2, User, DollarSign } from "lucide-react";
 import Link from "next/link";
+import type { Invoice, Company, Contact } from "@/lib/prisma-types";
 
 interface InvoicesPageProps {
   searchParams: Promise<{ new?: string }>;
@@ -138,7 +139,7 @@ export default async function InvoicesPage({ searchParams }: InvoicesPageProps) 
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {invoices.map((inv) => {
+                {invoices.map((inv: any) => {
                   const badgeInfo = statusBadges[inv.status] || statusBadges.draft;
                   return (
                     <tr key={inv.id} className="hover:bg-muted/20 transition-colors">

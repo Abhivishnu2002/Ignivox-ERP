@@ -160,7 +160,7 @@ export default async function DealDetailPage({ params }: DealDetailPageProps) {
               <p className="text-xs text-muted-foreground">No sales orders generated yet.</p>
             ) : (
               <div className="divide-y divide-border/60 text-xs">
-                {deal.salesOrders.map((so: SalesOrder) => (
+                {deal.salesOrders.map((so: any) => (
                   <Link
                     key={so.id}
                     href={`/sales-orders/${so.id}`}
@@ -184,7 +184,7 @@ export default async function DealDetailPage({ params }: DealDetailPageProps) {
             <div className="bg-card border border-border rounded-xl p-5 space-y-4">
               <h2 className="text-sm font-semibold">Custom Fields</h2>
               <div className="space-y-3 text-xs">
-                {customDefs.map((def: CustomFieldDefinition) => (
+                {customDefs.map((def: any) => (
                   <div key={def.id} className="flex justify-between items-center py-1 border-b border-border/40 last:border-0">
                     <span className="text-muted-foreground font-medium">{def.fieldLabel}</span>
                     <CustomFieldRenderer

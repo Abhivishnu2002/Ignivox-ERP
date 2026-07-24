@@ -159,7 +159,7 @@ export default async function WorkOrderDetailPage({ params }: WorkOrderDetailPag
             <div className="bg-card border border-border rounded-xl p-5 space-y-4">
               <h2 className="text-sm font-semibold">Custom Fields</h2>
               <div className="space-y-3 text-xs">
-                {customDefs.map((def: CustomFieldDefinition) => (
+                {customDefs.map((def: any) => (
                   <div key={def.id} className="flex justify-between items-center py-1 border-b border-border/40 last:border-0">
                     <span className="text-muted-foreground font-medium">{def.fieldLabel}</span>
                     <CustomFieldRenderer
@@ -191,7 +191,7 @@ export default async function WorkOrderDetailPage({ params }: WorkOrderDetailPag
               </p>
             ) : (
               <div className="divide-y divide-border/60 text-xs pt-1">
-                {workOrder.bom.lines.map((line: BomLine & { product: Product }) => {
+                {workOrder.bom.lines.map((line: any) => {
                   const lineQty = Number(line.quantity);
                   const totalNeeded = lineQty * plannedQty;
                   return (

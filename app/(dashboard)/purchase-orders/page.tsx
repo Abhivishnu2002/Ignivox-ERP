@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Truck, Calendar, Building2 } from "lucide-react";
 import Link from "next/link";
+import type { PurchaseOrder, Company, Product } from "@/lib/prisma-types";
 
 interface PurchaseOrdersPageProps {
   searchParams: Promise<{ new?: string }>;
@@ -96,7 +97,7 @@ export default async function PurchaseOrdersPage({ searchParams }: PurchaseOrder
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {purchaseOrders.map((po) => (
+                {purchaseOrders.map((po: any) => (
                   <tr key={po.id} className="hover:bg-muted/20 transition-colors">
                     <td className="px-5 py-3.5">
                       <Link
