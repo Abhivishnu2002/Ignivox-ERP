@@ -62,9 +62,20 @@ export const auth = betterAuth({
     }),
   ],
 
-  secret: process.env.BETTER_AUTH_SECRET,
+  secret: process.env.BETTER_AUTH_SECRET || "fallback_secret_ignivox_erp_key_32bytes",
   baseURL,
-  trustedOrigins: [baseURL],
+  trustedOrigins: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://*.vercel.app",
+    baseURL,
+    process.env.NEXT_PUBLIC_APP_URL || "",
+    process.env.BETTER_AUTH_URL || "",
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "",
+  ].filter(Boolean),
 });
 
 export type Session = typeof auth.$Infer.Session;
