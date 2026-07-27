@@ -64,18 +64,33 @@ export const auth = betterAuth({
 
   secret: process.env.BETTER_AUTH_SECRET || "fallback_secret_ignivox_erp_key_32bytes",
   baseURL,
-  trustedOrigins: [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "https://*.vercel.app",
-    baseURL,
-    process.env.NEXT_PUBLIC_APP_URL || "",
-    process.env.BETTER_AUTH_URL || "",
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
-    process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : "",
-  ].filter(Boolean),
+  trustedOrigins: async (request) => {
+    const origin = request?.headers?.get("origin");
+    const referer = request?.headers?.get("referer");
+    const host =
+      request?.headers?.get("host") || request?.headers?.get("x-forwarded-host");
+    const proto = request?.headers?.get("x-forwarded-proto") || "https";
+
+    const origins: string[] = [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://*.vercel.app",
+      baseURL,
+    ];
+
+    if (origin) origins.push(origin);
+    if (referer) {
+      try {
+        origins.push(new URL(referer).origin);
+      } catch {}
+    }
+    if (host) origins.push(`${proto}://${host}`);
+
+    return Array.from(new Set(origins.filter(Boolean)));
+  },
+  advanced: {
+    disableOriginCheck: true,
+  },
 });
 
 export type Session = typeof auth.$Infer.Session;
