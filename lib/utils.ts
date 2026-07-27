@@ -51,7 +51,6 @@ export function serializeDecimal(value: unknown): number {
 }
 
 // Serialize a Prisma result that may contain Decimal/BigInt fields
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function serializePrismaResult<T>(obj: T): T {
   return JSON.parse(
     JSON.stringify(obj, (_key, value) => {

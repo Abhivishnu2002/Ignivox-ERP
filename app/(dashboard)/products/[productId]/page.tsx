@@ -5,7 +5,7 @@ import { CustomFieldRenderer } from "@/components/custom-fields/CustomFieldRende
 import { BomForm, DeleteBomButton } from "./BomForm";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
-import { ArrowLeft, Package, Layers, Warehouse, Layers3 } from "lucide-react";
+import { ArrowLeft, Package, Warehouse, Layers3 } from "lucide-react";
 import Link from "next/link";
 
 interface ProductDetailPageProps {

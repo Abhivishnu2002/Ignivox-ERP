@@ -1,8 +1,7 @@
 "use server";
 
-import { prisma, tenantTransaction } from "@/lib/db";
+import { tenantTransaction } from "@/lib/db";
 import { requireTenantAccess } from "@/lib/auth";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const activitySchema = z.object({
@@ -16,7 +15,7 @@ const activitySchema = z.object({
 export type ActivityInput = z.infer<typeof activitySchema>;
 
 export async function createActivityAction(tenantId: string, input: ActivityInput) {
-  const { session, user } = await requireTenantAccess(tenantId);
+  const { user } = await requireTenantAccess(tenantId);
 
   const parsed = activitySchema.safeParse(input);
   if (!parsed.success) {

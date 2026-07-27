@@ -6,7 +6,7 @@ import { CustomFieldRenderer } from "@/components/custom-fields/CustomFieldRende
 import { ReceiveInventoryDialog } from "../ReceiveInventoryDialog";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { ArrowLeft, Truck, Calendar, Building2, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Truck, Calendar, Building2 } from "lucide-react";
 import Link from "next/link";
 
 interface PurchaseOrderDetailPageProps {

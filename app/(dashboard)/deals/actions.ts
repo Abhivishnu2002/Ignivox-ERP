@@ -1,5 +1,5 @@
 "use server";
-import { prisma, tenantTransaction } from "@/lib/db";
+import { tenantTransaction } from "@/lib/db";
 import { requireTenantAccess } from "@/lib/auth";
 import { PERMISSIONS } from "@/lib/permissions";
 import { revalidatePath } from "next/cache";

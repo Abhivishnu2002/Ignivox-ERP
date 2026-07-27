@@ -5,7 +5,6 @@ import { CompanyForm } from "./CompanyForm";
 import { Badge } from "@/components/ui/badge";
 import { Building2, Globe, Phone, Users } from "lucide-react";
 import Link from "next/link";
-import type { Company } from "@/lib/prisma-types";
 
 export default async function CompaniesPage() {
   const session = await getServerSession();
@@ -70,7 +69,7 @@ export default async function CompaniesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {companies.map((comp: any) => (
+          {companies.map((comp) => (
             <Link
               key={comp.id}
               href={`/companies/${comp.id}`}

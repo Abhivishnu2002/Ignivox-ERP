@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { getInitials } from "@/lib/utils";
 import { Users, Mail, Phone, Building2 } from "lucide-react";
 import Link from "next/link";
-import type { Contact, Company } from "@/lib/prisma-types";
 
 interface ContactsPageProps {
   searchParams: Promise<{ new?: string }>;
@@ -96,7 +95,7 @@ export default async function ContactsPage({ searchParams }: ContactsPageProps) 
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {contacts.map((contact: any) => (
+                {contacts.map((contact) => (
                   <tr key={contact.id} className="hover:bg-muted/20 transition-colors">
                     <td className="px-5 py-3.5">
                       <Link

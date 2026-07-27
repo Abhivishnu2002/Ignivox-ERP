@@ -335,7 +335,7 @@ async function main() {
     },
   });
 
-  const steelworksSupply = await prisma.company.create({
+  await prisma.company.create({
     data: {
       tenantId: tenant.id,
       name: "Jindal Steel & Alloys Ltd",
@@ -592,7 +592,7 @@ async function main() {
   // ============================================================
   console.log("💼 Creating leads and deals...");
 
-  const lead1 = await prisma.lead.create({
+  await prisma.lead.create({
     data: {
       tenantId: tenant.id,
       contactId: sarah.id,
@@ -1142,7 +1142,7 @@ async function seedOakridgeFurniture() {
       type: "supplier",
     },
   });
-  const fineFabrics = await prisma.company.create({
+  await prisma.company.create({
     data: {
       tenantId: tenant.id,
       name: "Fine Fabrics Inc.",

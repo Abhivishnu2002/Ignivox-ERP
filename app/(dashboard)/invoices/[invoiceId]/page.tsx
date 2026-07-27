@@ -6,7 +6,7 @@ import { CustomFieldRenderer } from "@/components/custom-fields/CustomFieldRende
 import { MarkPaidButton } from "../MarkPaidButton";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { ArrowLeft, FileText, Receipt, Calendar, Building2, User, CheckCircle2, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Receipt, Calendar, CheckCircle2, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
 interface InvoiceDetailPageProps {

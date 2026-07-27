@@ -143,7 +143,7 @@ export default async function DashboardPage() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        {stats.map((stat: any) => {
+        {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <Link
@@ -293,7 +293,7 @@ export default async function DashboardPage() {
             { label: "New Sales Order", href: "/sales-orders?new=1", icon: ShoppingCart },
             { label: "New Work Order", href: "/work-orders?new=1", icon: Factory },
             { label: "New Invoice", href: "/invoices?new=1", icon: Receipt },
-          ].map((action: any) => {
+          ].map((action) => {
             const Icon = action.icon;
             return (
               <Link

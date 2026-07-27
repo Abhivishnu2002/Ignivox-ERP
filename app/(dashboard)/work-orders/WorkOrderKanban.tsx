@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
 import { updateWorkOrderStageAction } from "./actions";
 import { Badge } from "@/components/ui/badge";
-import { Wrench, Calendar, ShoppingCart, CheckCircle2, ArrowUpRight } from "lucide-react";
+import { Calendar, ShoppingCart, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import type { WorkOrder, PipelineStage, Product, BillOfMaterials, SalesOrder } from "@/lib/prisma-types";
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -64,8 +64,8 @@ export function CustomFieldForm({ tenantId }: CustomFieldFormProps) {
   const {
     register,
     handleSubmit,
+    control,
     setValue,
-    watch,
     reset,
     formState: { errors },
   } = useForm<FormInput>({
@@ -77,8 +77,7 @@ export function CustomFieldForm({ tenantId }: CustomFieldFormProps) {
     },
   });
 
-  const fieldType = watch("fieldType");
-  const fieldLabel = watch("fieldLabel", "");
+  const fieldType = useWatch({ control, name: "fieldType" });
 
   function handleLabelChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;

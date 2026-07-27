@@ -7,7 +7,6 @@ import {
   SlidersHorizontal,
   GitCommitHorizontal,
   Shield,
-  Building2,
   ChevronRight,
   Settings,
 } from "lucide-react";

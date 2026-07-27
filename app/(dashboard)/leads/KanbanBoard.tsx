@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { formatCurrency, stageColorToStyle } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 import { updateLeadStageAction } from "./actions";
 import { ConvertLeadDialog } from "./ConvertLeadDialog";
 import { Badge } from "@/components/ui/badge";

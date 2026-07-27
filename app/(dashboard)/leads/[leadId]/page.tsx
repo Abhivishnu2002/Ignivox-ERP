@@ -11,7 +11,6 @@ import {
   Building2,
   Calendar,
   Sparkles,
-  DollarSign,
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";

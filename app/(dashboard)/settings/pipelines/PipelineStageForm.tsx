@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -63,8 +63,8 @@ export function PipelineStageForm({
   const {
     register,
     handleSubmit,
+    control,
     setValue,
-    watch,
     reset,
     formState: { errors },
   } = useForm<FormInput>({
@@ -77,7 +77,7 @@ export function PipelineStageForm({
     },
   });
 
-  const pipelineType = watch("pipelineType");
+  const pipelineType = useWatch({ control, name: "pipelineType" });
 
   async function onSubmit(data: FormInput) {
     setLoading(true);

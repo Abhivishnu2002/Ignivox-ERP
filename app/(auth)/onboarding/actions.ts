@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma, tenantTransaction } from "@/lib/db";
+import { prisma } from "@/lib/db";
 import { getServerSession } from "@/lib/auth";
 import { ADMIN_PERMISSIONS } from "@/lib/permissions";
 type PrismaTx = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];

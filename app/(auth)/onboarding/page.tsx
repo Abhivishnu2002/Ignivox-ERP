@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ const schema = z.object({
     .string()
     .min(2)
     .max(48)
-    .regex(/^[a-z0-9-]+$/, "Lowercase letters, numbers, hyphens only"),
+    .regex(/^[a-z0-9-]+$/, "Only lowercase letters, numbers, and hyphens"),
 });
 
 type Form = z.infer<typeof schema>;
@@ -28,14 +28,14 @@ export default function OnboardingPage() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     formState: { errors },
   } = useForm<Form>({
     resolver: zodResolver(schema),
   });
 
-  const tenantName = watch("tenantName", "");
+  const tenantName = useWatch({ control, name: "tenantName", defaultValue: "" });
 
   // Auto-generate slug from name
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {

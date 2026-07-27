@@ -3,11 +3,9 @@ import { prisma, tenantTransaction } from "@/lib/db";
 import { redirect, notFound } from "next/navigation";
 import { ActivityTimeline } from "@/components/activity/ActivityTimeline";
 import { CustomFieldRenderer } from "@/components/custom-fields/CustomFieldRenderer";
-import { Badge } from "@/components/ui/badge";
 import { formatDate, stageColorToStyle } from "@/lib/utils";
 import { ArrowLeft, Factory, Calendar, Layers, CheckCircle2, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import type { CustomFieldDefinition, BomLine, Product } from "@/lib/prisma-types";
 
 interface WorkOrderDetailPageProps {
   params: Promise<{ workOrderId: string }>;
@@ -159,7 +157,7 @@ export default async function WorkOrderDetailPage({ params }: WorkOrderDetailPag
             <div className="bg-card border border-border rounded-xl p-5 space-y-4">
               <h2 className="text-sm font-semibold">Custom Fields</h2>
               <div className="space-y-3 text-xs">
-                {customDefs.map((def: any) => (
+                {customDefs.map((def) => (
                   <div key={def.id} className="flex justify-between items-center py-1 border-b border-border/40 last:border-0">
                     <span className="text-muted-foreground font-medium">{def.fieldLabel}</span>
                     <CustomFieldRenderer
@@ -191,7 +189,7 @@ export default async function WorkOrderDetailPage({ params }: WorkOrderDetailPag
               </p>
             ) : (
               <div className="divide-y divide-border/60 text-xs pt-1">
-                {workOrder.bom.lines.map((line: any) => {
+                {workOrder.bom.lines.map((line) => {
                   const lineQty = Number(line.quantity);
                   const totalNeeded = lineQty * plannedQty;
                   return (
