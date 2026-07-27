@@ -5,6 +5,9 @@ import { StockAdjustForm } from "./StockAdjustForm";
 import { Badge } from "@/components/ui/badge";
 import { Warehouse, AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import type { InventoryItem, Product } from "@/lib/prisma-types";
+
+type InventoryItemWithProduct = InventoryItem & { product: Product };
 
 export default async function InventoryPage() {
   const session = await getServerSession();
@@ -81,7 +84,7 @@ export default async function InventoryPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {inventoryItems.map((item) => {
+                {inventoryItems.map((item: InventoryItemWithProduct) => {
                   const qtyNum = Number(item.quantity);
                   const reorderNum = item.reorderLevel !== null ? Number(item.reorderLevel) : null;
                   const isLow = reorderNum !== null && qtyNum <= reorderNum;

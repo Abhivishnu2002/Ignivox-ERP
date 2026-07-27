@@ -8,6 +8,9 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { ArrowLeft, ShoppingCart, Calendar, Building2, User, Factory, FileText } from "lucide-react";
 import Link from "next/link";
+import type { WorkOrder, Invoice, CustomFieldDefinition, Product } from "@/lib/prisma-types";
+
+type WorkOrderWithBom = WorkOrder & { bom: { product: Product } };
 
 interface SalesOrderDetailPageProps {
   params: Promise<{ soId: string }>;
@@ -163,7 +166,7 @@ export default async function SalesOrderDetailPage({ params }: SalesOrderDetailP
               <p className="text-xs text-muted-foreground">No work orders dispatched for this SO.</p>
             ) : (
               <div className="divide-y divide-border/60 text-xs">
-                {so.workOrders.map((wo) => (
+                {so.workOrders.map((wo: WorkOrderWithBom) => (
                   <Link
                     key={wo.id}
                     href={`/work-orders/${wo.id}`}
@@ -192,7 +195,7 @@ export default async function SalesOrderDetailPage({ params }: SalesOrderDetailP
               <p className="text-xs text-muted-foreground">No invoices generated yet.</p>
             ) : (
               <div className="divide-y divide-border/60 text-xs">
-                {so.invoices.map((inv) => (
+                {so.invoices.map((inv: Invoice) => (
                   <Link
                     key={inv.id}
                     href={`/invoices/${inv.id}`}
@@ -216,7 +219,7 @@ export default async function SalesOrderDetailPage({ params }: SalesOrderDetailP
             <div className="bg-card border border-border rounded-xl p-5 space-y-4">
               <h2 className="text-sm font-semibold">Custom Fields</h2>
               <div className="space-y-3 text-xs">
-                {customDefs.map((def) => (
+                {customDefs.map((def: CustomFieldDefinition) => (
                   <div key={def.id} className="flex justify-between items-center py-1 border-b border-border/40 last:border-0">
                     <span className="text-muted-foreground font-medium">{def.fieldLabel}</span>
                     <CustomFieldRenderer

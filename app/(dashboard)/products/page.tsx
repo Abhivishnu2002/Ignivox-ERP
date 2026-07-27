@@ -6,6 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { formatCurrency } from "@/lib/utils";
 import { Package, Layers } from "lucide-react";
 import Link from "next/link";
+import type { Product } from "@/lib/prisma-types";
+
+type ProductWithRelations = Product & {
+  inventoryItems: { quantity: unknown }[];
+  bomsAsParent: { lines: unknown[] }[];
+};
 
 interface ProductsPageProps {
   searchParams: Promise<{ new?: string }>;
@@ -100,7 +106,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {products.map((prod) => {
+                {products.map((prod: ProductWithRelations) => {
                   const stockTotal = prod.inventoryItems.reduce(
                     (sum, i) => sum + Number(i.quantity),
                     0
