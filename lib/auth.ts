@@ -4,6 +4,22 @@ import { organization } from "better-auth/plugins";
 import { prisma } from "@/lib/db";
 import { ADMIN_PERMISSIONS } from "@/lib/permissions";
 
+export function getBaseUrl(): string {
+  let url =
+    process.env.BETTER_AUTH_URL ||
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "") ||
+    "http://localhost:3000";
+
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    url = `https://${url}`;
+  }
+
+  return url.replace(/\/$/, "");
+}
+
+const baseURL = getBaseUrl();
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -46,13 +62,9 @@ export const auth = betterAuth({
     }),
   ],
 
-
-
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-  trustedOrigins: [
-    process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-  ],
+  baseURL,
+  trustedOrigins: [baseURL],
 });
 
 export type Session = typeof auth.$Infer.Session;
